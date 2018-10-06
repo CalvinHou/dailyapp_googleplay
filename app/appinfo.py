@@ -55,11 +55,14 @@ class UrlGen:
                       "PHOTOGRAPHY", "TRAVEL_AND_LOCAL", "LIFESTYLE", "GAME_TRIVIA", "SPORTS", "MAPS_AND_NAVIGATION", "EDUCATION"]
         #categories = ["PERSONALIZATION"]
         for i in categories:
-            top = CategoryDetail(_base_url + i + _top_tail, i.lower())
-            top_new = CategoryDetail(_base_url + i + _new_top_tail, (i + "_new").lower())
+            top = CategoryDetail(_base_url + i + _top_tail + '?start=0&num=120', i.lower())
+            top2 = CategoryDetail(_base_url + i + _top_tail + '?start=120&num=120', i.lower())
+            top_new = CategoryDetail(_base_url + i + _new_top_tail + "?start=0&num=120", (i + "_new").lower())
+            top_new2 = CategoryDetail(_base_url + i + _new_top_tail + "?start=120&num=120", (i + "_new").lower())
             all.append(top)
-            break
+            all.append(top2)
             all.append(top_new)
+            all.append(top_new2)
 
         print "all url len=", all.__len__()
         return all

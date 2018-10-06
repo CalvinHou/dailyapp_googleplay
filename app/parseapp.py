@@ -38,7 +38,7 @@ def parse_all_apps():
             index = 0
             for i in appDescLists:
                 desc = i.get_text()
-                print "desc:", desc
+                #print "desc:", desc
                 appsList.__getitem__(index).desc = desc
                 index = index + 1
 
@@ -58,7 +58,7 @@ def parse_all_apps():
                 icon_small = i.get("data-cover-small")
                 appsList.__getitem__(index).icon = icon
                 appsList.__getitem__(index).icon_small = icon_small
-                print icon, icon_small
+                #print icon, icon_small
                 index = index + 1
         except urllib2.HTTPError, e:
             print 'http error:', e.code
