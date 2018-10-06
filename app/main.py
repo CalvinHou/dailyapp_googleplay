@@ -7,10 +7,10 @@ import parseapp
 
 
 def initDb():
-    #db.drop_tables()
+    db.drop_tables()
     db.create_tables()
 
-initDb()
+#initDb()
 appsList = parseapp.parse_all_apps()
 cc = 0
 for i in appsList:
