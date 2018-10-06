@@ -1,6 +1,7 @@
 __author__ = 'houhuihua'
 
 import urllib2
+import utils
 
 from bs4 import BeautifulSoup
 from appinfo import *
@@ -18,18 +19,16 @@ def parse_all_apps():
             appTitleLists = soup.select("div.details > a.title")
             appDescLists = soup.select("div.details > div.description")
             appCompanyLists = soup.select("div.details > div.subtitle-container > a.subtitle")
-            #appDetialLists = soup.select("div.details")
             appIconLists = soup.select("div.cover-inner-align > img.cover-image")
-            #<div class="cover-inner-align"> <img alt="Free Music Player - Equalizer &amp; Bass Booster" class="cover-image" data-cover-large="//lh3.googleusercontent.com/9iy6gFozZx9hT4El-jVI3QLkWpm8Fy38LIU711Eb3KtvrlcttCUBBRx6NpfIIPFH5NQ=w340-rw" data-cover-small="//lh3.googleusercontent.com/9iy6gFozZx9hT4El-jVI3QLkWpm8Fy38LIU711Eb3KtvrlcttCUBBRx6NpfIIPFH5NQ=w170-rw" src="//lh3.googleusercontent.com/9iy6gFozZx9hT4El-jVI3QLkWpm8Fy38LIU711Eb3KtvrlcttCUBBRx6NpfIIPFH5NQ=w170-rw" aria-hidden="true"> </div>
 
             for i in appTitleLists:
-                title = i.get_text()
+                text = i.get_text()
                 href = i.get("href")
-                #print "title:", title
+                rank = utils.get_app_rank(text)
+                #print "title:", text
                 #print "href:", href
-                #db.writeAppInfo(title, "", "")
                 app = AppDetail()
-                app.title = title
+                app.title = i.get("title")
                 app.link = urlGen.get_base_link() + href
                 app.category = url.name
                 appsList.append(app)

@@ -15,8 +15,8 @@ appsList = parseapp.parse_all_apps()
 cc = 0
 for i in appsList:
     #print i.title, i.link, i.company, i.company_link, i.desc
+    #i.rank = utils.get_app_rank(i.title)
     i.package = utils.get_package(i.link)
-    i.rank = utils.get_app_rank(i.title)
 
     app = db.search_partappinfo(i.package)
     cc = cc + 1

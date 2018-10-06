@@ -78,7 +78,6 @@ def search_appinfo(package):
         app.icon = row[9]
         app.icon_small = row[10]
         return app
-
     return None
 
 def search_partappinfo(package):
@@ -96,26 +95,27 @@ def search_partappinfo(package):
 
     return None
 
-def check_append_appchangelog_info(app, appnew):
-    conn = sqlite3.connect('topapps')
-    c = conn.cursor()
+def check_append_appchangelog_info(app, appold):
     change = False
+    title = app.title
+    company = app.company
+    desc = app.desc
 
-    if (cmp(app.title, appnew.title) != 0):
-        appnew.title = app.title + _new_flag + ' to ' + appnew.title
+    if cmp(app.title, appold.title) != 0:
+        title = app.title + _new_flag + ' from ' + appold.title
         change = True
 
-    if (cmp(app.company, appnew.company) != 0):
-        appnew.company = app.company + _new_flag + ' to ' + appnew.company
+    if cmp(app.company, appold.company) != 0:
+        company = app.company + _new_flag + ' from ' + appold.company
         change = True
 
-    if (cmp(app.desc, appnew.desc) != 0):
-        appnew.desc = app.desc + _new_flag + ' to ' + appnew.desc
+    if cmp(app.desc, appold.desc) != 0:
+        desc = app.desc + _new_flag + ' from ' + appold.desc
         change = True
     if (change == True):
-        write_appchangelogInfo(appnew.rank, appnew.title, appnew.package,
-                              appnew.link, appnew.company, appnew.company_link,
-                              appnew.desc, appnew.date, appnew.category)
+        write_appchangelogInfo(app.rank, title, app.package,
+                              app.link, company, app.company_link,
+                              desc, app.date, app.category)
 
 
 def dump():
@@ -177,14 +177,14 @@ def create_appicon_tables():
        date            TEXT    NOT NULL,
        icon_data       BLOB
        );''')
-    print "app icon table created successfully"
+    print "app icon table created successfully."
     conn.commit()
     conn.close()
 
 
 def create_appchangelog_tables():
     conn = sqlite3.connect('topapps')
-    print 'connect top apps successfull.'
+    print 'connect top apps successfully.'
 
     conn.execute('''CREATE TABLE  topapps_changelog_list
        (id INTEGER PRIMARY KEY     NOT NULL,
