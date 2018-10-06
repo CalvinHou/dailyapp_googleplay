@@ -35,7 +35,7 @@ def update_appinfo(rank, title, package, link, company, company_link, desc, date
     c.execute("UPDATE topapps_list SET "
               "rank=?, title=?, package=?, "
               "link=?, company=?, company_link=? ,"
-              "desc=?, date=?, category=? "
+              "desc=?, date=?, category=?, "
               "icon_link=?, icon_link_small=? "
               "WHERE package=?",
               (rank, title, package, link, company, company_link, desc, date, category, package, icon, icon_small))

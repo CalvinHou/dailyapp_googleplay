@@ -7,7 +7,7 @@ import parseapp
 
 
 def initDb():
-    db.drop_tables()
+    #db.drop_tables()
     db.create_tables()
 
 initDb()
