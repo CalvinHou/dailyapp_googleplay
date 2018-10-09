@@ -7,11 +7,11 @@ from bs4 import BeautifulSoup
 from appinfo import *
 
 
-def parse_all_apps():
-    appsList = []
+def parse_all_apps(allcategories, callback):
     urlGen = UrlGen()
-    allCategories = urlGen.get_all_categories()
-    for url in allCategories:
+    appsListTotal = []
+    appsList = []
+    for url in allcategories:
         try:
             htmlTxt = urllib2.urlopen(url.url).read()
             print "url=, len=", url.name, url.url, len(htmlTxt)
@@ -21,6 +21,7 @@ def parse_all_apps():
             appCompanyLists = soup.select("div.details > div.subtitle-container > a.subtitle")
             appIconLists = soup.select("div.cover-inner-align > img.cover-image")
 
+            base = len(appsListTotal)
             for i in appTitleLists:
                 text = i.get_text()
                 href = i.get("href")
@@ -28,37 +29,49 @@ def parse_all_apps():
                 #print "title:", text
                 #print "href:", href
                 app = AppDetail()
+                app.rank = rank
                 app.title = i.get("title")
                 app.link = urlGen.get_base_link() + href
                 app.category = url.name
+                appsListTotal.append(app)
                 appsList.append(app)
 
-
-            index = 0
+            index = base
             for i in appDescLists:
                 desc = i.get_text()
                 #print "desc:", desc
-                appsList.__getitem__(index).desc = desc
-                index = index + 1
+                appsListTotal[index].desc = desc
+                appsList[index - base].desc = desc
+                index += 1
 
-            index = 0
+            index = base
             for i in appCompanyLists:
-                title = i.get_text()
+                title = i.get("title")
                 href = i.get("href")
                 #print "company:", title
                 #print "href:", href
-                appsList.__getitem__(index).company = title
-                appsList.__getitem__(index).company_link = urlGen.get_base_link() + href
-                index = index + 1
+                appsListTotal[index].company = title
+                appsListTotal[index].company_link = urlGen.get_base_link() + href
+                appsList[index-base].company = title
+                appsList[index-base].company_link = urlGen.get_base_link() + href
+                index += 1
 
-            index = 0
+            index = base
             for i in appIconLists:
                 icon = i.get("data-cover-large")
                 icon_small = i.get("data-cover-small")
-                appsList.__getitem__(index).icon = icon
-                appsList.__getitem__(index).icon_small = icon_small
+                appsListTotal[index].icon = urlGen.get_base_https() + icon
+                appsListTotal[index].icon_small = urlGen.get_base_https() + icon_small
                 #print icon, icon_small
-                index = index + 1
+                appsList[index-base].icon = urlGen.get_base_https() + icon
+                appsList[index-base].icon_small = urlGen.get_base_https() + icon_small
+                index += 1
+
+            if (callback is not None): #appsList is an catergory app list.
+                callback(appsList)
+
+            appsList[:] = []
+
         except urllib2.HTTPError, e:
             print 'http error:', e.code
             return None
@@ -66,5 +79,5 @@ def parse_all_apps():
             print 'url error:', e.code
             return None
 
-    return appsList
+    return appsListTotal
 
