@@ -9,7 +9,8 @@ from appinfo import *
 def save_app_to_list(appslist):
     cc = 0
     date = utils.getdate()
-    print appslist[0].category
+    if len(appslist) > 0:
+        print appslist[0].category
     for i in appslist:
         i.package = utils.get_package(i.link)
 
