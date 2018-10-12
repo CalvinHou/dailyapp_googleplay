@@ -22,6 +22,7 @@ def collect_all_apps():
             pass
         else:
             db.update_devinfo(dev.company, utils.getdate(), dev.status, i.package, i.company, i.company_link)
+            print i.package
 
         if app is None:
             db.write_appinfo(i.rank, i.title, i.package,

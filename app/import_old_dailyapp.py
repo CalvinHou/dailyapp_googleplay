@@ -76,11 +76,16 @@ def write_app_changelog(row):
 def write_app_developer(row):
     global cc
     cc+=1
+    company_link = row[0]
+    date = row[1]
+    company = row[2]
+    status = row[3]
 
-    i = CompanyDetail(row[2], "", row[1], row[3], row[0])
+    #i = CompanyDetail(row[2], "", row[1], row[3], row[0])
+    i = CompanyDetail(company, company_link, date, status, "")
 
     company = db.search_developer(i.company, "xxxxx")
-    if company is not None:
+    if company is not None and cc == 2:
         pass
         print "upate dev:", cc, i.status, company.package, i.date, company.company, company.company_link
         db.update_devinfo(i.company, i.date, i.status, company.package, company.company, company.company_link)
@@ -115,5 +120,5 @@ def dump_app_developer(callback):
 
 #dump_app(write_app)
 #dump_appchangelog(write_app_changelog)
-#dump_app_developer(write_app_developer)
+dump_app_developer(write_app_developer)
 

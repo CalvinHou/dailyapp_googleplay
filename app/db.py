@@ -34,24 +34,43 @@ def update_appdate(date, package):
     conn.commit()
     conn.close()
 
+def update_devinfo_company_pkg(company, date, package):
+    conn = sqlite3.connect('topapps')
+    c = conn.cursor()
+    c.execute("UPDATE topapps_developer_list SET "
+              "date=?, package=?, company=? "
+              "where company=?", (date, package, company, company))
+    conn.commit()
+    conn.close()
+
+
 def update_devinfo_simple(company, date, status, package):
     conn = sqlite3.connect('topapps')
     c = conn.cursor()
     c.execute("UPDATE topapps_developer_list SET "
               "date=?, status=? , package=?, company=? "
-              "where company=? or package=?", (date, status, package, company, company, package))
+              "where company=?", (date, status, package, company, company))
     conn.commit()
     conn.close()
 
+def update_devinfoex(dev, oldcompany):
+    update_devinfo(oldcompany, dev.date, dev.status, dev.package, dev.company, dev.company_link)
 
 def update_devinfo(oldcompany, date, status, package, newcompany, company_link):
     conn = sqlite3.connect('topapps')
     c = conn.cursor()
     c.execute("UPDATE topapps_developer_list SET "
               "date=?, status=? , package=?, company=?, company_link=? "
-              "where company=? or package=?", (date, status, package, newcompany, company_link, oldcompany, package))
+              "where company=?", (date, status, package, newcompany, company_link, oldcompany))
     if cmp(oldcompany, newcompany) != 0:
         print "updage_devinfo:", oldcompany, newcompany
+
+    app = search_appinfo(newcompany)
+    '''
+    if app is not None:
+        print("%s:%s", newcompany, package)
+        raise Exception("write company and package errror!!!!")
+    '''
     conn.commit()
     conn.close()
 
@@ -96,6 +115,16 @@ def write_appchangelogInfo(rank, title, package, link, company, company_link, de
     conn.commit()
     conn.close()
 
+def delete_developer(id):
+    conn = sqlite3.connect('topapps')
+    c = conn.cursor()
+    c.execute("DELETE FROM topapps_developer_list where id=?;", (id,))
+
+    #print "write_developer", company, company_link, date, 'ok', package
+    conn.commit()
+    conn.close()
+
+
 def write_developer(company, company_link, date, package):
     conn = sqlite3.connect('topapps')
     c = conn.cursor()
@@ -107,6 +136,15 @@ def write_developer(company, company_link, date, package):
     conn.commit()
     conn.close()
 
+def search_developer_pkg(package):
+    conn = sqlite3.connect('topapps')
+    c = conn.cursor()
+    result = c.execute("select company, company_link, date, status, package from topapps_developer_list where package=?;", (package,))
+    for row in result:
+        dev = CompanyDetail(row[0], row[1], row[2], row[3], row[4])
+        print row
+        return dev
+    return None
 
 def search_developer(company, package):
     conn = sqlite3.connect('topapps')

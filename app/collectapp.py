@@ -21,6 +21,7 @@ def save_app_to_list(appslist):
             pass
         else:
             db.update_devinfo(dev.company, date, dev.status, i.package, i.company, i.company_link)
+            print i.package
 
         if app is None:
             db.write_appinfo(i.rank, i.title, i.package,
