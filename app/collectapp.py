@@ -1,3 +1,4 @@
+#!/usr/local/bin/python2.7
 __author__ = 'houhuihua'
 
 import db
@@ -9,8 +10,8 @@ from appinfo import *
 def save_app_to_list(appslist):
     cc = 0
     date = utils.getdate()
-    if len(appslist) > 0:
-        print appslist[0].category
+    #if len(appslist) > 0:
+    #    print appslist[0].category
     for i in appslist:
         i.package = utils.get_package(i.link)
 
@@ -21,7 +22,8 @@ def save_app_to_list(appslist):
             pass
         else:
             db.update_devinfo(dev.company, date, dev.status, i.package, i.company, i.company_link)
-            print i.package
+            #if dev is not None and cmp(dev.date, date) != 0:
+            #    print "update dev:", i.company, i.company_link, dev.date, date
 
         if app is None:
             db.write_appinfo(i.rank, i.title, i.package,
@@ -29,6 +31,7 @@ def save_app_to_list(appslist):
                              i.desc, utils.getdate(), i.category,
                              i.icon, i.icon_small)
         else:
+            i.date = date
             db.check_append_appchangelog_info(i, app)
             db.update_appinfo(i.rank, i.title, i.package,
                               i.link, i.company, i.company_link,

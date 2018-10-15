@@ -1,3 +1,4 @@
+#!/usr/local/bin/python2.7
 __author__ = 'houhuihua'
 
 import sqlite3
@@ -226,6 +227,32 @@ def check_append_appchangelog_info(app, appold):
         write_appchangelogInfo(app.rank, title, app.package,
                               app.link, company, app.company_link,
                               desc, app.date, app.category)
+
+def get_specail_appslist_bydev(company):
+    conn = sqlite3.connect('topapps')
+    c = conn.cursor()
+    result = c.execute("select rank, title, package, "
+                       "link, company, company_link, "
+                       "desc, date, category, "
+                       "icon_link, icon_link_small "
+                       "from topapps_list where company=?;", (company,))
+    appsList = []
+    for row in result:
+        app = AppDetail()
+        app.rank = row[0]
+        app.title = row[1]
+        app.package = row[2]
+        app.link = row[3]
+        app.company = row[4]
+        app.company_link = row[5]
+        app.desc = row[6]
+        app.date = row[7]
+        app.category = row[8]
+        app.icon = row[9]
+        app.icon_small = row[10]
+        appsList.append(app)
+    return appsList
+
 
 def get_specail_new_appslist(date):
     conn = sqlite3.connect('topapps')

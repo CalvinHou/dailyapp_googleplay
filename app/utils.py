@@ -1,3 +1,4 @@
+#!/usr/local/bin/python2.7
 __author__ = 'houhuihua'
 
 import time

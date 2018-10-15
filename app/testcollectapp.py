@@ -1,3 +1,4 @@
+#!/usr/local/bin/python2.7
 __author__ = 'houhuihua'
 
 import db
@@ -22,7 +23,7 @@ def collect_all_apps():
             pass
         else:
             db.update_devinfo(dev.company, utils.getdate(), dev.status, i.package, i.company, i.company_link)
-            print i.package
+            #print i.package
 
         if app is None:
             db.write_appinfo(i.rank, i.title, i.package,
@@ -30,6 +31,7 @@ def collect_all_apps():
                              i.desc, utils.getdate(), i.category,
                              i.icon, i.icon_small)
         else:
+            i.date = utils.getdate()
             db.check_append_appchangelog_info(i, app)
             db.update_appinfo(i.rank, i.title, i.package,
                               i.link, i.company, i.company_link,
@@ -38,6 +40,7 @@ def collect_all_apps():
 
     return appsList
 
-print utils.getdatedetail()
+print "start:", utils.getdatedetail()
 collect_all_apps()
+print "end:", utils.getdatedetail()
 #db.dump_app()

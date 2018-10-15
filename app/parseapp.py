@@ -1,3 +1,4 @@
+#!/usr/local/bin/python2.7
 __author__ = 'houhuihua'
 
 import urllib2
@@ -11,10 +12,11 @@ def parse_all_apps(allcategories, callback):
     urlGen = UrlGen()
     appsListTotal = []
     appsList = []
+    count = 0
     for url in allcategories:
         try:
             htmlTxt = urllib2.urlopen(url.url).read()
-            print "url=, len=", url.name, url.url, len(htmlTxt)
+            print("cc:%d len = %d category = %s, url=%s" % (count, len(htmlTxt), url.name, url.url))
             soup = BeautifulSoup(htmlTxt, 'html.parser')
             appTitleLists = soup.select("div.details > a.title")
             appDescLists = soup.select("div.details > div.description")
@@ -71,6 +73,7 @@ def parse_all_apps(allcategories, callback):
                 callback(appsList)
 
             appsList[:] = []
+            count += 1
 
         except urllib2.HTTPError, e:
             print 'http error:', e.code
