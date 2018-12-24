@@ -25,7 +25,7 @@ def check_app_developer_suspend():
             else:
                 dev_status = const.OK_STATUS
             db.update_devinfo_simple(dev.company, utils.getdate(), dev_status, dev.package)
-            print ("dev:index = %d %s status:%d" % (index, dev.company, status))
+            #print ("dev:index = %d %s status:%d" % (index, dev.company, status))
             index = index + 1
 
 
