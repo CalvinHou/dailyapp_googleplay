@@ -17,7 +17,7 @@ def check_apps_suspend():
                 db.update_appdate(utils.getdate(), app.package)
             else:
                 db.update_appdate(utils.getdate(), app.package)
-                print ("index = %d %s status:%d" % (index, app.title, status))
+                #print ("index = %d %s status:%d" % (index, app.title, status))
         index = index + 1
 
 
