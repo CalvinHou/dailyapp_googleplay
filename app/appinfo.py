@@ -18,13 +18,15 @@ class CompanyDetail:
     status = ''
     date = ''
     package= ''
+    id= ''
 
-    def __init__(self, company, company_link, date, status, package):
+    def __init__(self, company, company_link, date, status, package, id):
         self.company = company
         self.company_link = company_link
         self.date = date
         self.status = status
         self.package = package
+        self.id = id
 
 
 class CategoryDetail:

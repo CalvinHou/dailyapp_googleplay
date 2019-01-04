@@ -4,6 +4,7 @@ __author__ = 'houhuihua'
 import sqlite3
 
 from appinfo import *
+import const
 
 _new_flag = '[new!!]'
 
@@ -54,6 +55,18 @@ def update_devinfo_simple(company, date, status, package):
     conn.commit()
     conn.close()
 
+def update_devinfo_link(dev, company_link):
+    update_devinfo_link(dev.company, dev.company_link, dev.date, dev.status, dev.package, company_link)
+
+def update_devinfo_link(company, company_link, date, status, package, company_link_search):
+    conn = sqlite3.connect('topapps')
+    c = conn.cursor()
+    c.execute("UPDATE topapps_developer_list SET "
+              "date=?, status=? , package=?, company=?, comany_link=? "
+              "where company_link =?", (date, status, package, company, company_link, company_link_search))
+    conn.commit()
+    conn.close()
+
 def update_devinfoex(dev, oldcompany):
     update_devinfo(oldcompany, dev.date, dev.status, dev.package, dev.company, dev.company_link)
 
@@ -66,8 +79,8 @@ def update_devinfo(oldcompany, date, status, package, newcompany, company_link):
     if cmp(oldcompany, newcompany) != 0:
         print "updage_devinfo:", oldcompany, newcompany
 
-    app = search_appinfo(newcompany)
     '''
+    app = search_appinfo(newcompany)
     if app is not None:
         print("%s:%s", newcompany, package)
         raise Exception("write company and package errror!!!!")
@@ -140,20 +153,42 @@ def write_developer(company, company_link, date, package):
 def search_developer_pkg(package):
     conn = sqlite3.connect('topapps')
     c = conn.cursor()
-    result = c.execute("select company, company_link, date, status, package from topapps_developer_list where package=?;", (package,))
+    result = c.execute("select company, company_link, date, status, package, id from topapps_developer_list where package=?;", (package,))
     for row in result:
-        dev = CompanyDetail(row[0], row[1], row[2], row[3], row[4])
+        dev = CompanyDetail(row[0], row[1], row[2], row[3], row[4], row[5])
         print row
+        conn.commit()
+        conn.close()
         return dev
+
+    conn.commit()
+    conn.close()
+    return None
+
+def search_developer_link(company_link):
+    conn = sqlite3.connect('topapps')
+    c = conn.cursor()
+    result = c.execute("select company, company_link, date, status, package, id from topapps_developer_list where company_link=?;", (company_link,))
+    for row in result:
+        dev = CompanyDetail(row[0], row[1], row[2], row[3], row[4], row[5])
+
+        conn.commit()
+        conn.close()
+        return dev
+    conn.commit()
+    conn.close()
     return None
 
 def search_developer(company, package):
     conn = sqlite3.connect('topapps')
     c = conn.cursor()
-    result = c.execute("select company, company_link, date, status, package from topapps_developer_list where company=?;", (company,))
+    result = c.execute("select company, company_link, date, status, package, id from topapps_developer_list where company=?;", (company,))
     for row in result:
-        dev = CompanyDetail(row[0], row[1], row[2], row[3], row[4])
+        dev = CompanyDetail(row[0], row[1], row[2], row[3], row[4], row[5])
         #print "find company:",company
+
+        conn.commit()
+        conn.close()
         return dev
 
     '''
@@ -163,7 +198,11 @@ def search_developer(company, package):
         print row
         return dev
     '''
+
     #print "not find pkg:", result
+    conn.commit()
+    conn.close()
+
     return None
 
 def search_appinfo(package):
@@ -187,8 +226,62 @@ def search_appinfo(package):
         app.category = row[8]
         app.icon = row[9]
         app.icon_small = row[10]
+
+        conn.commit()
+        conn.close()
         return app
+
+    conn.commit()
+    conn.close()
     return None
+
+def search_not_insert_dev():
+    conn = sqlite3.connect('topapps')
+    c = conn.cursor()
+    result = c.execute(
+        "SELECT * FROM  (SELECT topapps_list.package, topapps_list.company as company_app, topapps_list.company_link as company_link_app , "
+        "topapps_list.date, topapps_list.title, "
+        "topapps_developer_list.company as company_dev, topapps_developer_list.id "
+        "from topapps_list left outer join topapps_developer_list on topapps_list.company_link = topapps_developer_list.company_link) "
+        "where company_dev is null")
+
+    dict = {}
+    index = 0
+    for row in result:
+        dev = CompanyDetail(row[1], row[2], row[3], const.OK_STATUS, row[0], row[6])
+        dict[row[2]] = dev
+        index = index + 1
+
+    print index, dict.__len__()
+    conn.commit()
+    conn.close()
+    return dict
+
+def search_not_same_dev():
+    conn = sqlite3.connect('topapps')
+    c = conn.cursor()
+    result = c.execute(
+        "SELECT * FROM  (SELECT topapps_list.package, topapps_list.company as company_app, topapps_list.company_link as company_link_app, "
+        "topapps_list.date, topapps_list.title, "
+        "topapps_developer_list.company as company_dev , status, topapps_developer_list.company_link as company_link_dev, topapps_developer_list.id "
+        "from topapps_list inner join topapps_developer_list on topapps_list.package = topapps_developer_list.package) "
+        "where company_link_dev != company_link")
+
+    dict = {}
+    index = 0
+    for row in result:
+        dev = CompanyDetail(row[1], row[2], row[3], row[6], row[0], row[8])
+        dict[row[7]] = dev
+        index = index + 1
+    #print index
+
+    #for key, value in dict.items():
+    #    print key, value
+    print index, dict.__len__()
+
+    conn.commit()
+    conn.close()
+    return dict
 
 def search_partappinfo(package):
     conn = sqlite3.connect('topapps')
@@ -202,8 +295,13 @@ def search_partappinfo(package):
         app.desc = row[3]
         app.company_link = row[2]
         #print row
+
+        conn.commit()
+        conn.close()
         return app
 
+    conn.commit()
+    conn.close()
     return None
 
 def check_append_appchangelog_info(app, appold):
@@ -251,6 +349,10 @@ def get_specail_appslist_bydev(company):
         app.icon = row[9]
         app.icon_small = row[10]
         appsList.append(app)
+
+
+    conn.commit()
+    conn.close()
     return appsList
 
 
@@ -277,6 +379,9 @@ def get_specail_new_appslist(date):
         app.icon = row[9]
         app.icon_small = row[10]
         appsList.append(app)
+
+    conn.commit()
+    conn.close()
     return appsList
 
 
@@ -303,18 +408,24 @@ def get_specail_old_appslist(date):
         app.icon = row[9]
         app.icon_small = row[10]
         appsList.append(app)
+
+    conn.commit()
+    conn.close()
     return appsList
 
 def get_specail_devslist(date):
     conn = sqlite3.connect('topapps')
     c = conn.cursor()
     result = c.execute("select company, company_link, "
-                       " date, status, package "
+                       " date, status, package, id "
                        "from topapps_developer_list where date!=?;", (date,))
     devsList = []
     for row in result:
-        dev = CompanyDetail(row[0], row[1], row[2], row[3], row[4])
+        dev = CompanyDetail(row[0], row[1], row[2], row[3], row[4], row[5])
         devsList.append(dev)
+
+    conn.commit()
+    conn.close()
     return devsList
 
 
@@ -326,6 +437,8 @@ def dump():
     print 'topapps_changelog_list'
     for row in conn.execute("SELECT * FROM topapps_changelog_list"):
         print row
+    conn.commit()
+    conn.close()
 
 def dump_app(callback):
     conn = sqlite3.connect('topapps')
@@ -334,11 +447,15 @@ def dump_app(callback):
             callback(row)
         else:
             print row
+    conn.commit()
+    conn.close()
 
 def dump_changelog():
     conn = sqlite3.connect('topapps')
     for row in conn.execute("SELECT * FROM topapps_changelog_list"):
         print row
+    conn.commit()
+    conn.close()
 
 def dump_developer(callback):
     conn = sqlite3.connect('topapps')
@@ -347,6 +464,8 @@ def dump_developer(callback):
             callback(row)
         else:
             print row
+    conn.commit()
+    conn.close()
 
 def drop_tables():
     conn = sqlite3.connect('topapps')
@@ -357,6 +476,8 @@ def drop_tables():
         conn.execute("DROP table topapps_developer_list")
     except sqlite3.OperationalError:
         print "sqlite3.OperationalError: table not exist!"
+    conn.commit()
+    conn.close()
 
 def drop_dev_tables():
     conn = sqlite3.connect('topapps')
@@ -379,12 +500,17 @@ def drop_appchangelog_tables():
     except sqlite3.OperationalError:
         print "sqlite3.OperationalError: table not exist!"
 
+    conn.commit()
+    conn.close()
+
 def drop_icon_tables():
     conn = sqlite3.connect('topapps')
     try:
         conn.execute("DROP table topapps_icon_list")
     except sqlite3.OperationalError:
         print "sqlite3.OperationalError: table not exist!"
+    conn.commit()
+    conn.close()
 
 def create_tables():
     create_app_tables()

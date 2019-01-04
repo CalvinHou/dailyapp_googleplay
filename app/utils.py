@@ -30,3 +30,10 @@ def get_httpstatuscode(url):
     except requests.exceptions.HTTPError as e:
         return e
 
+def get_httpstatus_request(url):
+    try:
+        request = requests.get(url)
+        return request
+    except requests.exceptions.HTTPError as e:
+        return e
+

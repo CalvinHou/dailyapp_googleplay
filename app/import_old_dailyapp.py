@@ -80,9 +80,9 @@ def write_app_developer(row):
     date = row[1]
     company = row[2]
     status = row[3]
+    id = row[4]
 
-    #i = CompanyDetail(row[2], "", row[1], row[3], row[0])
-    i = CompanyDetail(company, company_link, date, status, "")
+    i = CompanyDetail(company, company_link, date, status, "", id)
 
     company = db.search_developer(i.company, "xxxxx")
     if company is not None and cc == 2:
@@ -111,7 +111,7 @@ def dump_appchangelog(callback):
 
 def dump_app_developer(callback):
     conn = sqlite3.connect('topapp_rank')
-    for row in conn.execute("SELECT url,date, category, status FROM categories_list"):
+    for row in conn.execute("SELECT url,date, category, status, id FROM categories_list"):
         if callback is not None:
             callback(row)
         else:

@@ -10,13 +10,17 @@ def force_check_suspended_developer():
     print "force_check_suspended_developer dev len=", devsList.__len__()
     for dev in devsList:
         if dev.status == const.SUSPEND_STATUS:
-            #if dev.status != SUSPEND_STATUS:
-            status = utils.get_httpstatuscode(dev.company_link.strip('\n'))
-            if status != 200:
-                print("dev:%s %s suspend!" % (dev.company, dev.company_link))
+            req = utils.get_httpstatus_request(dev.company_link.strip('\n'))
+            if req.content is not None:
+                error = req.content.find('We\'re sorry, the requested URL was not found on this server.')
+                #print("dev:%s %s %s, %s, suspend!" % (dev.company, dev.company_link, error, req.content.__len__()))
+                if error == -1:
+                    dev_status = const.OK_STATUS
+                    print ("index = %d %s status:%s" % (index, dev.company, dev_status))
+                else:
+                    dev_status = const.SUSPEND_STATUS
+            elif req.status_code == 404:
                 dev_status = const.SUSPEND_STATUS
-            else:
-                dev_status = const.OK_STATUS
-            db.update_devinfo_simple(dev.company, utils.getdate(), dev_status, dev.package)
-            print ("index = %d %s status:%d" % (index, dev.company, status))
+            #db.update_devinfo_simple(dev.company, utils.getdate(), dev_status, dev.package)
             index = index + 1
+force_check_suspended_developer();
