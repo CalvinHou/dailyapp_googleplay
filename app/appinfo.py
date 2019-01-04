@@ -7,6 +7,10 @@ _base_url = "https://play.google.com/store/apps/category/"
 _top_tail = "/collection/topselling_free"
 _new_top_tail = "/collection/topselling_new_free"
 
+_base_search_url = "https://play.google.com/store/search?q="
+#_top_search_tail = "&c=apps"
+_top_search_tail = "&c=apps&price=1&rating=1&num=120"
+
 
 class CompanyDetail:
     company_link = ""
@@ -101,6 +105,18 @@ class UrlGen:
             all.append(top_new2)
 
         print "all url len=", all.__len__()
+        return all
+
+    def get_search_url(self):
+        all = []
+        categories = ["sms"]
+        for i in categories:
+            #top = CategoryDetail(_base_search_url + i + _top_search_tail, i.lower())
+            top = CategoryDetail("https://play.google.com/store/apps/collection/search_results_cluster_apps?clp=ggEJCgNzbXMaAggA:S:ANO1ljIKuaM&gsr=CgyCAQkKA3NtcxoCCAA%3D:S:ANO1ljJMwpI", i.lower())
+            print top.url
+            all.append(top)
+
+        print "search url len=", all.__len__()
         return all
 
 
