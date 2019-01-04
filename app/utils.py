@@ -10,6 +10,9 @@ def getdatedetail():
 def getdate():
     return time.strftime("%Y-%m-%d", time.localtime())
 
+def get_yesterday_date():
+    return time.strftime("%Y-%m-%d", time.localtime() - 1000 * 60 * 60 * 24)
+
 def get_package(link):
     pos = link.find("id=")
     if (pos > -1):

@@ -428,6 +428,21 @@ def get_specail_devslist(date):
     conn.close()
     return devsList
 
+def get_specail_devslist_ex(date, date2):
+    conn = sqlite3.connect('topapps')
+    c = conn.cursor()
+    result = c.execute("select company, company_link, "
+                       " date, status, package, id "
+                       "from topapps_developer_list where date!=? and date!=? and status=?;", (date, date2, const.OK_STATUS, ))
+    devsList = []
+    for row in result:
+        dev = CompanyDetail(row[0], row[1], row[2], row[3], row[4], row[5])
+        devsList.append(dev)
+
+    conn.commit()
+    conn.close()
+    return devsList
+
 
 def dump():
     conn = sqlite3.connect('topapps')

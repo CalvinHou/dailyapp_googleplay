@@ -5,7 +5,8 @@ import db,utils,const
 def check_app_developer_suspend():
     index = 0
     date = utils.getdate()
-    devsList = db.get_specail_devslist(date)
+    yesterday = utils.getdate()
+    devsList = db.get_specail_devslist_ex(date, yesterday)
     print "check_app_developer_suspend dev len=", devsList.__len__()
     for dev in devsList:
         if cmp(dev.date, date) != 0 and cmp(dev.status, const.OK_STATUS) == 0:
