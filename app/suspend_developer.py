@@ -10,22 +10,29 @@ def check_app_developer_suspend():
     for dev in devsList:
         if cmp(dev.date, date) != 0 and cmp(dev.status, const.OK_STATUS) == 0:
             #if dev.status != SUSPEND_STATUS:
-            status = utils.get_httpstatuscode(dev.company_link.strip('\n'))
-            if status != 200:
-                print("dev:%s %s suspend!" % (dev.company, dev.company_link))
+
+            req = utils.get_httpstatus_request(dev.company_link.strip('\n'))
+            if req.content is not None:
+                error = req.content.find('We\'re sorry, the requested URL was not found on this server.')
+                if error == -1:
+                    dev_status = const.OK_STATUS
+                    #print ("index = %d %s status:%s" % (index, dev.company, dev_status))
+                else:
+                    dev_status = const.SUSPEND_STATUS
+                    print("dev:%s %s suspend!" % (dev.company, dev.company_link))
+                    appsList = db.get_specail_appslist_bydev(dev.company)
+                    for app in appsList:
+                        if app.title.find(const._SUSPEND) == -1:
+                            app.title = const._SUSPEND  + "[" + utils.getdate() + "]" + app.title
+                            db.update_apptitle(app.title, app.package)
+                            print("\t [dead now]title:%s %s suspend!" % (app.title, app.link))
+                        else:
+                            print("\t [dead ago]title:%s %s suspend!" % (app.title, app.link))
+
+            elif req.status_code == 404:
                 dev_status = const.SUSPEND_STATUS
-                appsList = db.get_specail_appslist_bydev(dev.company)
-                for app in appsList:
-                    if app.title.find(const._SUSPEND) == -1:
-                        app.title = const._SUSPEND  + "[" + utils.getdate() + "]" + app.title
-                        db.update_apptitle(app.title, app.package)
-                        print("\t [dead now]title:%s %s suspend!" % (app.title, app.link))
-                    else:
-                        print("\t [dead ago]title:%s %s suspend!" % (app.title, app.link))
-            else:
-                dev_status = const.OK_STATUS
+
             db.update_devinfo_simple(dev.company, utils.getdate(), dev_status, dev.package)
-            #print ("dev:index = %d %s status:%d" % (index, dev.company, status))
             index = index + 1
 
 
