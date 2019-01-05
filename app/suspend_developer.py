@@ -5,7 +5,7 @@ import db,utils,const
 def check_app_developer_suspend():
     index = 0
     date = utils.getdate()
-    yesterday = utils.getdate()
+    yesterday = utils.get_yesterday_date()
     devsList = db.get_specail_devslist_ex(date, yesterday)
     print "check_app_developer_suspend dev len=", devsList.__len__()
     for dev in devsList:
